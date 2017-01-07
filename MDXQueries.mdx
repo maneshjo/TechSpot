@@ -1,0 +1,56 @@
+select from [Adventure Works2008];
+
+-- Use of ALLMEMBERS and CHILDREN functions 
+select [Measures].[Vacation Hours]  on columns,
+[Employee].[Last Name].ALLMEMBERS on rows
+ from [Adventure Works2008];
+ 
+ 
+ select [Measures].[Vacation Hours]  on columns,
+[Employee].[Last Name].CHILDREN on rows
+ from [Adventure Works2008];
+ 
+ -- tuples
+ select  ([Employee].[Birth Date]. &[1942-04-03T00:00:00],
+ [Employee].[Birth Date].&[1941-11-17T00:00:00]} on rows,
+[Employee].[Last Name] on columns
+ from [Adventure Works2008];
+ 
+ -- cross join
+select {[Employee].[Job Title].CHILDREN * [Employee].[Marital Status].CHILDREN} on rows,
+[Measures].[Sick Leave Hours] on columns from
+[Adventure Works2008];
+
+select crossjoin([Employee].[Job Title].CHILDREN , [Employee].[Marital Status].CHILDREN) on rows,
+[Measures].[Sick Leave Hours] on columns from
+[Adventure Works2008];
+
+--eliminate null values
+	
+select 
+non empty crossjoin([Employee].[Job Title].CHILDREN , [Employee].[Marital Status].CHILDREN) on rows,
+[Measures].[Sick Leave Hours] on columns from
+[Adventure Works2008];
+	
+-- Apply Slicing using Where Clause
+
+select [Employee].[Last Name].MEMBERS on columns,
+[Measures].[Sick Leave Hours] on rows
+from [Adventure Works2008]
+where [Employee].[Birth Date].&[1946-11-09T00:00:00];
+
+-- filtering
+
+select [Employee].[Last Name].MEMBERS on columns,
+filter([Employee].[Job Title].MEMBERS,
+[Measures].[Sick Leave Hours] <100)  on rows
+from [Adventure Works2008]
+where {[Employee].[Birth Date].&[1946-11-09T00:00:00]};
+
+-- sorting
+
+select [Measures].[Sick Leave Hours] on columns,
+order([Employee].[Last Name].MEMBERS,[Measures].[Sick Leave Hours],desc) on rows
+from [Adventure Works2008]
+where {[Employee].[Birth Date].&[1946-11-09T00:00:00],
+[Employee].[Birth Date].&[1946-05-06T00:00:00]};
